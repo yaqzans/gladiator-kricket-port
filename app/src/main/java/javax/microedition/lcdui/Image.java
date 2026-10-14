@@ -12,9 +12,16 @@ public class Image {
     private static final HashMap<String, Image> cache = new HashMap<>();
 
     final Bitmap bitmap;
+    private final String name;
 
-    private Image(Bitmap bitmap) {
+    private Image(Bitmap bitmap, String name) {
         this.bitmap = bitmap;
+        this.name = name;
+    }
+
+    /** The resource path it was loaded from; saved matches store images by this name. */
+    public String name() {
+        return name;
     }
 
     public static synchronized Image createImage(String name) throws IOException {
@@ -38,7 +45,7 @@ public class Image {
         if (b == null) {
             throw new IOException("cannot decode " + name);
         }
-        img = new Image(b);
+        img = new Image(b, name);
         cache.put(name, img);
         return img;
     }

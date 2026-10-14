@@ -19,14 +19,34 @@ of the parts of `javax.microedition.*` the game actually calls:
 | `javax/microedition/lcdui/Canvas.java`, `gk/Host.java` | The game's own loop calls `serviceRepaints()`; each call renders one 240x320 frame |
 | `javax/microedition/media/Player.java` | MIDI music and effects through Android `MediaPlayer` |
 | `javax/microedition/rms/RecordStore.java` | Save data (unlocked matches, scores) in app storage |
-| `gk/GameView.java` | Scales the frame to the screen, draws the touch buttons, turns touches into key presses |
+| `gk/GameView.java` | Scales the frame to the screen, turns touches into the phone's key presses |
+| `gk/Snapshot.java`, `gk/Host.java` | Exact save and resume of a match; pause on calls / audio focus loss |
 
-### Controls
+### Playing it
 
-- **Tap the game** to swing the bat (or to select / continue in menus).
-- **Swipe** on the game for up / down / left / right in menus.
-- Buttons under the game: **OK** and **BACK** (the phone's soft keys), a **D-pad**, and **HIT**.
-- Android **back** pauses a match.
+The game fills the screen (sharp pixels, original proportions) over a soft blurred glow of
+itself; there are no on-screen keypads.
+
+- **In a match, touch anywhere to swing.** The swing happens the instant your finger lands,
+  so timing works exactly like pressing 5 on the phone did.
+- **Swipe to aim** (an extra, not in the original): swipe down while swinging to hit it
+  straight back past the bowler, right or left for square shots, diagonals in between. A plain
+  tap keeps the original game's own choice of shot. Timing still decides whether you connect,
+  a ball the game rules unplayable stays unplayable, and fielders, catches and the lions work
+  exactly as before.
+- **Menus:** tap the item you want; swipe for up / down; the bottom corners are the soft keys
+  (their labels are drawn there).
+- **Pause:** the small button at the top right, or Android back (the game's own pause).
+
+### Leaving and coming back
+
+- Home, an incoming call (even as a banner), another app's sound, or unplugging headphones
+  pauses the match the way a call did on the original phone: back to the menu with *Continue*.
+- If Android closes the app, or you choose Exit mid-match, the match is saved exactly as it
+  was (score, balls, lives, the ball in flight, the lions). Next launch, the menu offers
+  *Continue* (that match) or *New Game*.
+- The save is a field-by-field snapshot of the game's objects (`gk/Snapshot.java`); on start
+  the match is loaded the normal way, then the saved state is written over it.
 
 ### Decompiler fixes
 

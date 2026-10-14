@@ -1,6 +1,13 @@
 package gk;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.media.AudioAttributes;
+import android.media.AudioFocusRequest;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -13,6 +20,16 @@ import defpackage.GC;
 
 public class GameActivity extends Activity {
     private static GC midlet;
+    private AudioManager audioManager;
+    private Object focusRequest;   // AudioFocusRequest on API 26+
+
+    private final BroadcastReceiver noisy = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // headphones pulled out mid-match: pause it rather than blast the speaker
+            Host.interrupt();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,11 +41,15 @@ public class GameActivity extends Activity {
         }
         GameView view = new GameView(this);
         setContentView(view);
-        Host.attach(this, view);
+        Host.attach(this, view, getIntent().getBooleanExtra("autoplay", false));
+        Host.debugAim = getIntent().getIntExtra("aim", 0);
         hideSystemBars(view);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        requestAudioFocus();
 
-        Host.autoplay = getIntent().getBooleanExtra("autoplay", false);
         if (midlet == null) {
+            Host.armRestore();
             midlet = new GC();
             // new e() prepares five MediaPlayers and parses the map; keep it off the UI thread
             new Thread(midlet::startApp, "gk-start").start();
@@ -64,13 +85,44 @@ public class GameActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        unregisterReceiver(noisy);
         Host.pause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(noisy, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+        requestAudioFocus();
         Host.resume();
+    }
+
+    /**
+     * A call, an alarm or another app's sound can take the audio while the game stays on
+     * screen (a call often arrives as a banner, which does not pause the activity). Pause the
+     * match then, the way an incoming call did on the original phone.
+     */
+    private void requestAudioFocus() {
+        AudioManager.OnAudioFocusChangeListener l = change -> {
+            if (change == AudioManager.AUDIOFOCUS_LOSS || change == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                Host.interrupt();
+            } else if (change == AudioManager.AUDIOFOCUS_GAIN) {
+                Host.interruptionOver();
+            }
+        };
+        if (Build.VERSION.SDK_INT >= 26) {
+            if (focusRequest == null) {
+                focusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                        .setAudioAttributes(new AudioAttributes.Builder()
+                                .setUsage(AudioAttributes.USAGE_GAME)
+                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
+                        .setOnAudioFocusChangeListener(l)
+                        .build();
+            }
+            audioManager.requestAudioFocus((AudioFocusRequest) focusRequest);
+        } else {
+            audioManager.requestAudioFocus(l, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        }
     }
 
     /** Back = right soft key (pause in a match, back in menus). */

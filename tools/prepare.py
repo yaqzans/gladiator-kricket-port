@@ -49,7 +49,7 @@ def main():
         shutil.copytree(decompiled, GAME_SRC)
 
     # git apply works outside a repo too; -p2 strips the a/orig/ and b/fixed/ prefixes
-    subprocess.run(["git", "apply", "-p2", f"--directory={GAME_SRC.relative_to(ROOT).as_posix()}",
+    subprocess.run(["git", "apply", "--unidiff-zero", "-p2", f"--directory={GAME_SRC.relative_to(ROOT).as_posix()}",
                     str(PATCH)], check=True, cwd=ROOT)
     print(f"game code -> {GAME_SRC.relative_to(ROOT)}")
 
