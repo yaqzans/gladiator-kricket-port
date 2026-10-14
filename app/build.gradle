@@ -1,0 +1,43 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'gk'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'gk.gladiatorkricket'
+        minSdk 21
+        targetSdk 35
+        versionCode 1
+        versionName '1.0'
+    }
+
+    // release signing key lives outside the repo; point to it with -PsigningProps=<file>
+    def signingFile = project.findProperty('signingProps')
+    if (signingFile != null) {
+        def props = new Properties()
+        file(signingFile).withInputStream { props.load(it) }
+        signingConfigs {
+            release {
+                storeFile file(props['storeFile'])
+                storePassword props['storePassword']
+                keyAlias props['keyAlias']
+                keyPassword props['keyPassword']
+            }
+        }
+        buildTypes.release.signingConfig signingConfigs.release
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lint {
+        // the decompiled game code trips plenty of lint checks; not worth fixing
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}

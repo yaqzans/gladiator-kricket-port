@@ -5,3 +5,8 @@ build/
 .gradle/
 local.properties
 *.apk
+app/src/main/resources/
+app/src/main/res/drawable/icon.png
+app/src/main/java/defpackage/
+runs/
+.git-full/

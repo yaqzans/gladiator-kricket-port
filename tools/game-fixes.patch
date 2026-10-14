@@ -1,0 +1,485 @@
+diff --git a/orig/a.java b/fixed/a.java
+index 0832b17..005241a 100644
+--- a/orig/a.java
++++ b/fixed/a.java
+@@ -41,7 +41,7 @@ public final class a implements Runnable {
+                 this.f1a[i] = playerCreatePlayer;
+             } catch (Exception e) {
+                 System.out.println(new StringBuffer().append("err in jdMethod_new localException2>>").append(e).toString());
+-                e.f25a = false;
++                defpackage.e.f25a = false;
+                 for (int i2 = 0; i2 < this.f1a.length; i2++) {
+                     this.f1a[i2] = null;
+                 }
+@@ -155,7 +155,7 @@ public final class a implements Runnable {
+             this.f4a.removeAllElements();
+             super.notify();
+         } catch (Exception e) {
+-            printStackTrace();
++            e.printStackTrace();
+         }
+     }
+ }
+diff --git a/orig/c.java b/fixed/c.java
+index d86422b..f8c4aa8 100644
+--- a/orig/c.java
++++ b/fixed/c.java
+@@ -52,8 +52,8 @@ public final class c {
+                 switch (this.f) {
+                     case 0:
+                         this.i = (byte) (this.i + 1);
+-                        if (this.i > 7 && e.m2a(0, 10) < 5) {
+-                            this.f11a = (short) (e.m2a(0, 10) < 5 ? 0 : 1);
++                        if (this.i > 7 && defpackage.e.m2a(0, 10) < 5) {
++                            this.f11a = (short) (defpackage.e.m2a(0, 10) < 5 ? 0 : 1);
+                             this.i = (byte) 0;
+                         }
+                         if (this.f11a != 0) {
+@@ -112,7 +112,7 @@ public final class c {
+                         }
+                         break;
+                 }
+-                graphics.drawRegion(e.f71U, 0, 0, e.f71U.getWidth(), e.f71U.getHeight(), 0, this.f9a - 50, this.f10b + 42, 0);
++                graphics.drawRegion(defpackage.e.f71U, 0, 0, defpackage.e.f71U.getWidth(), defpackage.e.f71U.getHeight(), 0, this.f9a - 50, this.f10b + 42, 0);
+                 break;
+             case 1:
+                 this.f8a = (byte) 0;
+@@ -120,8 +120,8 @@ public final class c {
+                 switch (this.f) {
+                     case 0:
+                         this.i = (byte) (this.i + 1);
+-                        if (this.i > 7 && e.m2a(0, 10) < 5) {
+-                            this.f11a = (short) (e.m2a(0, 10) < 5 ? 0 : 1);
++                        if (this.i > 7 && defpackage.e.m2a(0, 10) < 5) {
++                            this.f11a = (short) (defpackage.e.m2a(0, 10) < 5 ? 0 : 1);
+                             this.i = (byte) 0;
+                         }
+                         if (this.f11a != 0) {
+@@ -183,7 +183,7 @@ public final class c {
+                         }
+                         break;
+                 }
+-                graphics.drawRegion(e.f71U, 0, 0, e.f71U.getWidth(), e.f71U.getHeight(), 2, this.f9a + 112, this.f10b + 42, 0);
++                graphics.drawRegion(defpackage.e.f71U, 0, 0, defpackage.e.f71U.getWidth(), defpackage.e.f71U.getHeight(), 2, this.f9a + 112, this.f10b + 42, 0);
+                 break;
+             case 2:
+                 this.f8a = (byte) 1;
+@@ -225,11 +225,11 @@ public final class c {
+                             this.a.m4a(4);
+                         } else if (this.i == 7) {
+                             this.g = (byte) 7;
+-                            graphics.drawRegion(e.o, 0, 0, 143, 105, 0, this.f9a - 40, this.f10b + 10, 0);
++                            graphics.drawRegion(defpackage.e.o, 0, 0, 143, 105, 0, this.f9a - 40, this.f10b + 10, 0);
+                         } else if (this.i == 8) {
+                             this.g = (byte) 8;
+                             if (this.j < 3) {
+-                                graphics.drawRegion(e.o, 143, 23, 120, 82, 0, this.f9a - 28, this.f10b + 33, 0);
++                                graphics.drawRegion(defpackage.e.o, 143, 23, 120, 82, 0, this.f9a - 28, this.f10b + 33, 0);
+                             }
+                             this.i = (byte) 0;
+                             this.j = (byte) (this.j + 1);
+@@ -307,7 +307,7 @@ public final class c {
+ 
+     public final void a(Graphics graphics) {
+         b(graphics);
+-        this.c = (byte) (e.f178e[this.h] + this.g);
+-        graphics.drawRegion(f7a[this.f8a], e.f175f[this.c << 2], e.f175f[(this.c << 2) + 1], e.f175f[(this.c << 2) + 2], e.f175f[(this.c << 2) + 3], this.b, this.f9a + (this.d == 1 ? e.f176c[this.c << 1] : e.f177d[this.c << 1]), this.f10b + (this.d == 1 ? e.f176c[(this.c << 1) + 1] : e.f177d[(this.c << 1) + 1]), 0);
++        this.c = (byte) (defpackage.e.f178e[this.h] + this.g);
++        graphics.drawRegion(f7a[this.f8a], defpackage.e.f175f[this.c << 2], defpackage.e.f175f[(this.c << 2) + 1], defpackage.e.f175f[(this.c << 2) + 2], defpackage.e.f175f[(this.c << 2) + 3], this.b, this.f9a + (this.d == 1 ? defpackage.e.f176c[this.c << 1] : defpackage.e.f177d[this.c << 1]), this.f10b + (this.d == 1 ? defpackage.e.f176c[(this.c << 1) + 1] : defpackage.e.f177d[(this.c << 1) + 1]), 0);
+     }
+ }
+diff --git a/orig/d.java b/fixed/d.java
+index 3ae1072..5d54c12 100644
+--- a/orig/d.java
++++ b/fixed/d.java
+@@ -44,15 +44,13 @@ public final class d {
+     public d(e eVar, byte b, byte b2, byte b3) {
+         this.a = eVar;
+         this.f13a = b2;
+-        ?? r0 = this;
+-        r0.f14b = b3;
++        this.f14b = b3;
+         try {
+             this.f15a = new Image[5];
+             this.f15a[0] = Image.createImage("/BM0.png");
+-            r0 = this.f15a;
+-            r0[1] = Image.createImage("/BM1.png");
++            this.f15a[1] = Image.createImage("/BM1.png");
+         } catch (IOException e) {
+-            r0.printStackTrace();
++            e.printStackTrace();
+         }
+     }
+ 
+@@ -295,7 +293,7 @@ public final class d {
+ 
+     public final void a(Graphics graphics) {
+         if (this.g == 16 && this.d < 14) {
+-            graphics.drawRegion(e.f70y, (this.d % 4) * (e.f70y.getWidth() >> 2), 0, e.f70y.getWidth() >> 2, e.f70y.getHeight(), 0, ((this.f12a + this.f17a[64]) - 4) - 7, ((this.b + this.f17a[65]) - 85) - 42, 0);
++            graphics.drawRegion(defpackage.e.f70y, (this.d % 4) * (defpackage.e.f70y.getWidth() >> 2), 0, defpackage.e.f70y.getWidth() >> 2, defpackage.e.f70y.getHeight(), 0, ((this.f12a + this.f17a[64]) - 4) - 7, ((this.b + this.f17a[65]) - 85) - 42, 0);
+         }
+         System.out.println(new StringBuffer().append("action>>").append((int) this.g).append(" frame>>").append((int) this.c).append(" imageNo>>").append((int) this.h).toString());
+         graphics.drawRegion(this.f15a[this.h], this.f16a[this.e * 4], this.f16a[(this.e * 4) + 1], this.f16a[(this.e * 4) + 2], this.f16a[(this.e * 4) + 3], this.i, (this.f12a + this.f17a[this.e * 2]) - 4, (this.b + this.f17a[(this.e * 2) + 1]) - 85, 0);
+diff --git a/orig/e.java b/fixed/e.java
+index 40846b2..42aaaa3 100644
+--- a/orig/e.java
++++ b/fixed/e.java
+@@ -822,6 +822,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                         graphics.drawRegion(f62g, 0, 0, f62g.getWidth(), f62g.getHeight(), 0, (f20a - f62g.getWidth()) >> 1, this.f117Y + (b6 * f62g.getHeight()) + (b6 * (f62g.getHeight() >> this.f113u)), 0);
+                         graphics.drawRegion(f59d, 0, (b6 * f59d.getHeight()) / 5, f59d.getWidth(), f59d.getHeight() / 5, 0, (f20a - f59d.getWidth()) >> 1, this.f117Y + ((b6 * f59d.getHeight()) / 5) + (b6 * (f62g.getHeight() >> this.f113u)), 0);
+                         b5 = (byte) (b6 + 1);
++                        continue;
+                     }
+                     break;
+                 }
+@@ -933,6 +934,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                         graphics.drawRegion(f62g, 0, 0, f62g.getWidth(), f62g.getHeight(), 0, (f20a - f62g.getWidth()) >> 1, this.f117Y + (b10 * f62g.getHeight()) + (b10 * (f62g.getHeight() >> this.f113u)), 0);
+                         graphics.drawRegion(f59d, 0, (b10 * f59d.getHeight()) / 5, f59d.getWidth(), f59d.getHeight() / 5, 0, (f20a - f59d.getWidth()) >> 1, this.f117Y + ((b10 * f59d.getHeight()) / 5) + (b10 * (f62g.getHeight() >> this.f113u)), 0);
+                         b9 = (byte) (b10 + 1);
++                        continue;
+                     }
+                     break;
+                 }
+@@ -1043,15 +1045,10 @@ public final class e extends Canvas implements Runnable, CommandListener {
+     /* JADX WARN: Type inference failed for: r0v63 */
+     /* JADX WARN: Type inference failed for: r0v64 */
+     private void a(Graphics graphics) {
+-        ?? CreateImage;
+         if (this.f44g < f20a) {
+-            e eVar = this;
+-            eVar.f44g += 40;
+-            CreateImage = eVar;
++            this.f44g += 40;
+         } else {
+-            e eVar2 = this;
+-            eVar2.f44g = f20a;
+-            CreateImage = eVar2;
++            this.f44g = f20a;
+         }
+         try {
+             if (G == null) {
+@@ -1061,11 +1058,10 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                 H = Image.createImage("/showRun.png");
+             }
+             if (f67l == null) {
+-                CreateImage = Image.createImage("/scoreStrip.png");
+-                f67l = CreateImage;
++                f67l = Image.createImage("/scoreStrip.png");
+             }
+         } catch (IOException e) {
+-            CreateImage.printStackTrace();
++            e.printStackTrace();
+         }
+         short height = (short) ((b >> 1) - (G.getHeight() << 1));
+         int i = 0;
+@@ -1164,6 +1160,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                                 this.a.a();
+                                 this.a.a(graphics);
+                                 this.f73a[2].a(graphics);
++                                break;
+                             } else {
+                                 this.f73a[b6].a(graphics);
+                                 b5 = (byte) (b6 + 1);
+@@ -1172,6 +1169,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                     } else {
+                         this.f19a[b4].a();
+                         b3 = (byte) (b4 + 1);
++                        continue;
+                     }
+                     break;
+                 }
+@@ -1233,6 +1231,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                                 } else if (b(256)) {
+                                     this.f30b = (byte) 2;
+                                 }
++                                break;
+                             } else {
+                                 this.f73a[b10].a(graphics);
+                                 b9 = (byte) (b10 + 1);
+@@ -1241,6 +1240,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                     } else {
+                         this.f19a[b8].a();
+                         b7 = (byte) (b8 + 1);
++                        continue;
+                     }
+                     break;
+                 }
+@@ -1282,6 +1282,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                                     this.f30b = (byte) 3;
+                                     this.f98E = 270;
+                                 }
++                                break;
+                             } else {
+                                 this.f73a[b15].a(graphics);
+                                 b14 = (byte) (b15 + 1);
+@@ -1290,6 +1291,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                     } else {
+                         this.f19a[b13].a();
+                         b12 = (byte) (b13 + 1);
++                        continue;
+                     }
+                     break;
+                 }
+@@ -1332,6 +1334,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                                     this.f19a[1].f184b = (byte) 0;
+                                     this.f19a[1].f186d = (byte) 5;
+                                 }
++                                break;
+                             } else {
+                                 this.f73a[b19].a(graphics);
+                                 b18 = (byte) (b19 + 1);
+@@ -1340,6 +1343,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                     } else {
+                         this.f19a[b17].a();
+                         b16 = (byte) (b17 + 1);
++                        continue;
+                     }
+                     break;
+                 }
+@@ -1369,6 +1373,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                                     n();
+                                     h();
+                                 }
++                                break;
+                             } else {
+                                 this.f73a[b23].a(graphics);
+                                 b22 = (byte) (b23 + 1);
+@@ -1377,6 +1382,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                     } else {
+                         this.f19a[b21].a();
+                         b20 = (byte) (b21 + 1);
++                        continue;
+                     }
+                     break;
+                 }
+@@ -1442,6 +1448,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                                         this.a.d = (byte) 0;
+                                     }
+                                 }
++                                break;
+                             } else {
+                                 this.f73a[b27].a(graphics);
+                                 b26 = (byte) (b27 + 1);
+@@ -1450,6 +1457,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                     } else {
+                         this.f19a[b25].a();
+                         b24 = (byte) (b25 + 1);
++                        continue;
+                     }
+                     break;
+                 }
+@@ -1482,6 +1490,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                                     graphics.drawRegion(f69a[this.f100n], (m2a(0, 2) * f69a[this.f100n].getWidth()) / 3, 0, f69a[this.f100n].getWidth() / 3, f69a[this.f100n].getHeight(), m2a(0, 7), this.f82p, this.f83q, 0);
+                                 }
+                                 t();
++                                break;
+                             } else {
+                                 this.f73a[b31].a(graphics);
+                                 b30 = (byte) (b31 + 1);
+@@ -1490,6 +1499,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                     } else {
+                         this.f19a[b29].a();
+                         b28 = (byte) (b29 + 1);
++                        continue;
+                     }
+                     break;
+                 }
+@@ -1521,6 +1531,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                                     graphics.drawImage(ac, this.f91y + 2, this.f92z + 2, 0);
+                                     graphics.drawRegion(f69a[this.f100n], (m2a(0, 2) * f69a[this.f100n].getWidth()) / 3, 0, f69a[this.f100n].getWidth() / 3, f69a[this.f100n].getHeight(), m2a(0, 7), this.f82p, this.f83q, 0);
+                                 }
++                                break;
+                             } else {
+                                 this.f73a[b35].a(graphics);
+                                 b34 = (byte) (b35 + 1);
+@@ -1529,6 +1540,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                     } else {
+                         this.f19a[b33].a();
+                         b32 = (byte) (b33 + 1);
++                        continue;
+                     }
+                     break;
+                 }
+@@ -1559,6 +1571,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                     } else {
+                         this.f73a[b37].a(graphics);
+                         b36 = (byte) (b37 + 1);
++                        continue;
+                     }
+                     break;
+                 }
+@@ -1591,6 +1604,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                                     this.f19a[1].f186d = (byte) 5;
+                                     this.j = (byte) 0;
+                                 }
++                                break;
+                             } else {
+                                 this.f73a[b41].a(graphics);
+                                 b40 = (byte) (b41 + 1);
+@@ -1599,6 +1613,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                     } else {
+                         this.f19a[b39].a();
+                         b38 = (byte) (b39 + 1);
++                        continue;
+                     }
+                     break;
+                 }
+@@ -1636,6 +1651,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                                     graphics.drawImage(ac, this.f91y + 2, this.f92z + 2, 0);
+                                     graphics.drawRegion(f69a[this.f100n], (m2a(0, 2) * f69a[this.f100n].getWidth()) / 3, 0, f69a[this.f100n].getWidth() / 3, f69a[this.f100n].getHeight(), m2a(0, 7), this.f82p, this.f83q, 0);
+                                 }
++                                break;
+                             } else {
+                                 this.f73a[b45].a(graphics);
+                                 b44 = (byte) (b45 + 1);
+@@ -1644,6 +1660,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                     } else {
+                         this.f19a[b43].a();
+                         b42 = (byte) (b43 + 1);
++                        continue;
+                     }
+                     break;
+                 }
+@@ -1661,11 +1678,13 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                 if (b47 < this.f19a.length) {
+                     this.f19a[b47].a(graphics);
+                     b46 = (byte) (b47 + 1);
++                } else {
++                    break;
+                 }
+             }
+         }
+         if (this.f30b == 10 && this.f31c == 2) {
+-            graphics.drawRegion(c.f7a[this.f73a[2].f8a], f175f[this.f73a[2].c << 2], f175f[(this.f73a[2].c << 2) + 1], f175f[(this.f73a[2].c << 2) + 2], f175f[(this.f73a[2].c << 2) + 3], this.f73a[2].b, this.f73a[2].f9a + (this.f73a[2].d == 1 ? f176c[this.f73a[2].c << 1] : f177d[this.f73a[2].c << 1]), this.f73a[2].f10b + (this.f73a[2].d == 1 ? f176c[(this.f73a[2].c << 1) + 1] : f177d[(this.f73a[2].c << 1) + 1]), 0);
++            graphics.drawRegion(defpackage.c.f7a[this.f73a[2].f8a], f175f[this.f73a[2].c << 2], f175f[(this.f73a[2].c << 2) + 1], f175f[(this.f73a[2].c << 2) + 2], f175f[(this.f73a[2].c << 2) + 3], this.f73a[2].b, this.f73a[2].f9a + (this.f73a[2].d == 1 ? f176c[this.f73a[2].c << 1] : f177d[this.f73a[2].c << 1]), this.f73a[2].f10b + (this.f73a[2].d == 1 ? f176c[(this.f73a[2].c << 1) + 1] : f177d[(this.f73a[2].c << 1) + 1]), 0);
+         }
+         graphics.translate(-this.f46h, -this.f47i);
+         if (this.f30b == 9 && this.j < 24) {
+@@ -2257,9 +2276,9 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                     ac = Image.createImage("/shadow.png");
+                     break;
+                 case 8:
+-                    c.f7a = new Image[2];
+-                    c.f7a[0] = Image.createImage("/lion.png");
+-                    c.f7a[1] = Image.createImage("/umpire.png");
++                    defpackage.c.f7a = new Image[2];
++                    defpackage.c.f7a[0] = Image.createImage("/lion.png");
++                    defpackage.c.f7a[1] = Image.createImage("/umpire.png");
+                     break;
+                 case 9:
+                     f72b = new Image[3];
+@@ -2325,7 +2344,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+         W = null;
+         X = null;
+         ac = null;
+-        c.f7a = null;
++        defpackage.c.f7a = null;
+         f72b = null;
+         ae = null;
+         System.gc();
+@@ -3286,7 +3305,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+ 
+     private void a(String str, String str2) {
+         String[] strArr = null;
+-        DataInputStream dataInputStream = new DataInputStream(str2.getClass().getResourceAsStream(str2));
++        DataInputStream dataInputStream = new DataInputStream(e.class.getResourceAsStream(str2));
+         try {
+             StringBuffer stringBuffer = new StringBuffer();
+             int i = 0;
+@@ -3309,6 +3328,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                             i = Integer.parseInt(strTrim.substring(strTrim.indexOf("=") + 1));
+                             this.f137aa = i;
+                             strArr = new String[i];
++                            continue;
+                         }
+                         if (i > 0) {
+                             strArr[i2] = strTrim;
+@@ -3595,6 +3615,7 @@ public final class e extends Canvas implements Runnable, CommandListener {
+                         z3 = true;
+                     } else {
+                         i7++;
++                        continue;
+                     }
+                 }
+                 String strSubstring = str.substring(i6, i7);
+diff --git a/orig/f.java b/fixed/f.java
+index eaa9ac6..ea7e204 100644
+--- a/orig/f.java
++++ b/fixed/f.java
+@@ -122,7 +122,7 @@ public final class f {
+                         this.f182a += this.h;
+                         this.b += this.i;
+                     }
+-                    if ((-this.a.f79m) < this.d && e.a(this.f182a - (this.c >> 1), this.b - (this.c >> 1), this.c, this.c, this.a.f89w, this.a.f90x, 6, 6)) {
++                    if ((-this.a.f79m) < this.d && defpackage.e.a(this.f182a - (this.c >> 1), this.b - (this.c >> 1), this.c, this.c, this.a.f89w, this.a.f90x, 6, 6)) {
+                         this.a.f74g = false;
+                         this.f186d = (byte) 2;
+                         break;
+@@ -163,7 +163,7 @@ public final class f {
+                 case 3:
+                     this.f184b = (byte) 0;
+                     a(this.f182a, this.b, 0, 0, 0);
+-                    if ((-this.a.f79m) < this.d && e.a(this.f182a - (this.c >> 1), this.b - (this.c >> 1), this.c, this.c, this.a.f89w, this.a.f90x, 6, 6)) {
++                    if ((-this.a.f79m) < this.d && defpackage.e.a(this.f182a - (this.c >> 1), this.b - (this.c >> 1), this.c, this.c, this.a.f89w, this.a.f90x, 6, 6)) {
+                         System.out.println(new StringBuffer().append(this.a.f79m).append("in colllision>>").append((int) this.f183a).toString());
+                         this.a.f74g = false;
+                         this.f186d = (byte) 2;
+@@ -205,11 +205,11 @@ public final class f {
+                     } else if (this.f188e < 20) {
+                         this.f184b = (byte) 10;
+                     }
+-                    if ((-this.a.f79m) < this.d && e.a(this.f182a - (this.c >> 1), this.b - (this.c >> 1), (this.c * 3) / 2, this.c, this.a.f89w, this.a.f90x, 6, 6)) {
++                    if ((-this.a.f79m) < this.d && defpackage.e.a(this.f182a - (this.c >> 1), this.b - (this.c >> 1), (this.c * 3) / 2, this.c, this.a.f89w, this.a.f90x, 6, 6)) {
+                         this.f184b = (byte) 0;
+                         this.f188e = (byte) 0;
+                         if (!this.a.f94i) {
+-                            if (e.m2a(0, 100) < 40) {
++                            if (defpackage.e.m2a(0, 100) < 40) {
+                                 this.a.f74g = false;
+                                 this.f186d = (byte) 7;
+                             } else {
+@@ -306,7 +306,7 @@ public final class f {
+                 if (this.f182a < 0) {
+                     this.f185c = (byte) 2;
+                 }
+-                Image image = e.f72b[this.f190f];
++                Image image = defpackage.e.f72b[this.f190f];
+                 short s = this.a.f168a[this.f190f][(this.f184b * 4) + 0];
+                 short s2 = this.a.f168a[this.f190f][(this.f184b * 4) + 1];
+                 short s3 = this.a.f168a[this.f190f][(this.f184b * 4) + 2];
+@@ -320,21 +320,21 @@ public final class f {
+                 return;
+             }
+             if (this.f183a == 0) {
+-                graphics.drawRegion(e.ae, this.a.f171d[(this.f184b << 2) + 0], this.a.f171d[(this.f184b << 2) + 1], this.a.f171d[(this.f184b << 2) + 2], this.a.f171d[(this.f184b << 2) + 3], 0, (this.f182a + this.a.f172a[(this.f184b << 1) + 0]) - 30, (this.b + this.a.f172a[(this.f184b << 1) + 1]) - 83, 0);
++                graphics.drawRegion(defpackage.e.ae, this.a.f171d[(this.f184b << 2) + 0], this.a.f171d[(this.f184b << 2) + 1], this.a.f171d[(this.f184b << 2) + 2], this.a.f171d[(this.f184b << 2) + 3], 0, (this.f182a + this.a.f172a[(this.f184b << 1) + 0]) - 30, (this.b + this.a.f172a[(this.f184b << 1) + 1]) - 83, 0);
+                 return;
+             }
+             System.out.println(new StringBuffer().append(this.f184b << 2).append("frame>>").append((int) this.f184b).append(" ").append((int) this.a.f173e[(this.f184b << 2) + 0]).toString());
+-            graphics.drawRegion(e.q, this.a.f173e[(this.f184b << 2) + 0], this.a.f173e[(this.f184b << 2) + 1], this.a.f173e[(this.f184b << 2) + 2], this.a.f173e[(this.f184b << 2) + 3], 0, this.a.f174b[(this.f184b << 1) + 0], this.a.f174b[(this.f184b << 1) + 1], 0);
++            graphics.drawRegion(defpackage.e.q, this.a.f173e[(this.f184b << 2) + 0], this.a.f173e[(this.f184b << 2) + 1], this.a.f173e[(this.f184b << 2) + 2], this.a.f173e[(this.f184b << 2) + 3], 0, this.a.f174b[(this.f184b << 1) + 0], this.a.f174b[(this.f184b << 1) + 1], 0);
+             if (this.f186d == 9) {
+                 if (this.f188e == 5 || this.f188e == 6) {
+-                    graphics.drawImage(e.F, this.a.f174b[(this.f184b << 1) + 0] - (e.F.getWidth() / 2), (this.a.f174b[(this.f184b << 1) + 1] - (e.F.getHeight() / 2)) + 24, 0);
++                    graphics.drawImage(defpackage.e.F, this.a.f174b[(this.f184b << 1) + 0] - (defpackage.e.F.getWidth() / 2), (this.a.f174b[(this.f184b << 1) + 1] - (defpackage.e.F.getHeight() / 2)) + 24, 0);
+                 } else if (this.f188e > 11) {
+-                    graphics.drawRegion(e.O, ((this.f188e % 6) * e.O.getWidth()) / 6, 0, e.O.getWidth() / 6, e.O.getHeight(), 0, this.a.f174b[(this.f184b << 1) + 0] + 1, (this.a.f174b[(this.f184b << 1) + 1] - e.O.getHeight()) + 12, 0);
++                    graphics.drawRegion(defpackage.e.O, ((this.f188e % 6) * defpackage.e.O.getWidth()) / 6, 0, defpackage.e.O.getWidth() / 6, defpackage.e.O.getHeight(), 0, this.a.f174b[(this.f184b << 1) + 0] + 1, (this.a.f174b[(this.f184b << 1) + 1] - defpackage.e.O.getHeight()) + 12, 0);
+                 }
+                 if (this.f188e <= 5 || this.f188e >= 11) {
+                     return;
+                 }
+-                graphics.drawImage(e.N, this.a.f174b[(this.f184b << 1) + 0] + (e.N.getWidth() / 2), this.a.f174b[(this.f184b << 1) + 1] - (e.N.getHeight() / 2), 0);
++                graphics.drawImage(defpackage.e.N, this.a.f174b[(this.f184b << 1) + 0] + (defpackage.e.N.getWidth() / 2), this.a.f174b[(this.f184b << 1) + 1] - (defpackage.e.N.getHeight() / 2), 0);
+             }
+         } catch (Exception e) {
+             System.out.println(new StringBuffer().append("err in draw ").append((int) this.f183a).append(" action ").append((int) this.f186d).append(" frame>>").append((int) this.f184b).append(" fielder >").append(e).toString());
+@@ -349,7 +349,7 @@ public final class f {
+             this.i = (byte) (i4 - i2);
+             return true;
+         }
+-        int iM10b = e.m10b(i3 - i, i4 - i2);
++        int iM10b = defpackage.e.m10b(i3 - i, i4 - i2);
+         this.f190f = (byte) (((iM10b + 210) % 360) / 45);
+         this.h = (byte) ((i5 * this.a.m8b(iM10b)) >> 14);
+         this.i = (byte) ((i5 * this.a.m7a(iM10b)) >> 14);
