@@ -24,8 +24,15 @@ of the parts of `javax.microedition.*` the game actually calls:
 
 ### Playing it
 
-The game fills the screen (sharp pixels, original proportions) over a soft blurred glow of
-itself; there are no on-screen keypads.
+The game is redrawn in HD and fills the whole screen; there are no on-screen keypads.
+
+- **HD graphics:** every sprite and background has a 4x version made with Real-ESRGAN
+  (`tools/upscale.py`), and every draw call is replayed at the phone's full resolution on the
+  GPU (`Graphics.java` records each frame as a `Picture`). Text is drawn in a real font,
+  fitted to the original letter widths, so every line and wrap lands where it always did.
+- **Full screen:** the game gets a canvas 240 wide and as tall as the phone's screen shape; its
+  own code reads the size, so a match shows more of the stadium, edge to edge. Menus keep their
+  layout, centred, with the background art covering the screen.
 
 - **In a match, touch anywhere to swing.** The swing happens the instant your finger lands,
   so timing works exactly like pressing 5 on the phone did.
@@ -34,8 +41,10 @@ itself; there are no on-screen keypads.
   tap keeps the original game's own choice of shot. Timing still decides whether you connect,
   a ball the game rules unplayable stays unplayable, and fielders, catches and the lions work
   exactly as before.
-- **Menus:** tap the item you want; swipe for up / down; the bottom corners are the soft keys
-  (their labels are drawn there).
+- **Menus:** tap the item you want; swipe for up / down. The phone's soft-key labels (SELECT,
+  BACK...) are not drawn: tap a screen to go on, Android back to go back.
+- **Reaching the target ends the match** with the game's own win sequence (the original kept
+  batting until the balls ran out).
 - **Pause:** the small button at the top right, or Android back (the game's own pause).
 
 ### Leaving and coming back
@@ -69,7 +78,12 @@ Needs JDK 17, the Android SDK (platform 35, build-tools 35), Python 3 and
 
 ```bash
 python tools/prepare.py path/to/gladiatorc.jar path/to/jadx/bin/jadx
+# optional, for the HD graphics (needs PyTorch; ~15 min on a CPU):
+python tools/upscale.py RealESRGAN_x4plus_anime_6B.pth app/src/main/resources app/src/main/resources/hd
 ./gradlew assembleDebug
 ```
+
+Without the HD images the game still runs, drawn from the original pixels. The Real-ESRGAN
+weights are on github.com/xinntao/Real-ESRGAN (release v0.2.2.4).
 
 The APK is in `app/build/outputs/apk/debug/`.

@@ -13,16 +13,17 @@ import android.view.View;
 import android.view.WindowInsets;
 
 /**
- * The game picture as large as the screen allows (sharp pixels, proportions kept), over a soft
- * blurred copy of itself that fills the rest of the screen. No button strip: the game is played
- * by touching the picture, like a phone game.
+ * The game fills the screen: the port gives it a canvas 240 pixels wide and as tall as the
+ * phone's screen shape, and the game lays itself out on it (its own code reads the size), so
+ * there are no bars. Drawn with crisp nearest-neighbour scaling. No on-screen keypad: the game
+ * is played by touching the picture, like a phone game.
  *
  *  - In a match: touching anywhere swings the bat at that instant (the timing is everything,
  *    exactly as pressing 5 was). Swiping while doing it aims the shot (an extra on top of the
  *    original): down = straight back past the bowler, right / left = square, diagonals between.
  *    A small pause button (top right) is the phone's right soft key, the game's own pause.
- *  - In menus: tap an item to pick it, swipe for the arrow keys, tap the bottom corners for the
- *    soft keys (their labels are drawn there), tap elsewhere for the key that screen needs.
+ *  - In menus: tap an item to pick it, swipe for the arrow keys, tap elsewhere for the key that
+ *    screen needs (the phone's soft-key labels are not drawn: nothing to press but the screen).
  */
 public class GameView extends View {
     // menu geometry in game pixels (240x320), measured from the game's own screens
@@ -32,22 +33,12 @@ public class GameView extends View {
 
     private final float dp;
     private final Paint sharp = new Paint();
-    private final Paint smooth = new Paint(Paint.FILTER_BITMAP_FLAG);
     private final Paint ui = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Rect gameRect = new Rect();
-    private final Rect coverRect = new Rect();
     private final Rect pauseRect = new Rect();
     private final Rect src = new Rect(0, 0, Host.WIDTH, Host.HEIGHT);
-    private final Rect tinyRect = new Rect(0, 0, 12, 16);
-    private final Rect preRect = new Rect();
     private int insetL, insetT, insetR, insetB;
 
-    // sharp-bilinear: nearest-neighbour up by a whole factor, then smooth to the final size,
-    // so every game pixel comes out the same size (4.5x would otherwise mix 4- and 5-pixel rows)
-    private Bitmap pre;
-    private Canvas preCanvas;
-    private final Bitmap tiny = Bitmap.createBitmap(12, 16, Bitmap.Config.ARGB_8888);
-    private final Canvas tinyCanvas = new Canvas(tiny);
 
     // one finger drives the game at a time
     private int pointer = -1;
@@ -61,7 +52,6 @@ public class GameView extends View {
         super(context);
         dp = getResources().getDisplayMetrics().density;
         sharp.setFilterBitmap(false);
-        smooth.setFilterBitmap(true);
         setBackgroundColor(0xFF000000);
     }
 
@@ -92,50 +82,55 @@ public class GameView extends View {
         layoutAll(w, h);
     }
 
+    /** Called once the safe area is known; the activity starts the game from here. */
+    interface SizeListener {
+        void onSafeArea(int width, int height);
+    }
+
+    private SizeListener sizeListener;
+
+    void setSizeListener(SizeListener l) {
+        sizeListener = l;
+    }
+
     private void layoutAll(int w, int h) {
         if (w == 0 || h == 0) {
             return;
         }
-        int aw = w - insetL - insetR, ah = h - insetT - insetB;
-        float scale = Math.min(aw / (float) Host.WIDTH, ah / (float) Host.HEIGHT);
-        int gw = Math.round(Host.WIDTH * scale), gh = Math.round(Host.HEIGHT * scale);
-        int gx = insetL + (aw - gw) / 2, gy = insetT + (ah - gh) / 2;
-        gameRect.set(gx, gy, gx + gw, gy + gh);
-
-        int k = Math.max(1, Math.min(3, (int) Math.floor(scale)));
-        if (pre == null || pre.getWidth() != Host.WIDTH * k) {
-            pre = Bitmap.createBitmap(Host.WIDTH * k, Host.HEIGHT * k, Bitmap.Config.ARGB_8888);
-            preCanvas = new Canvas(pre);
-            preRect.set(0, 0, pre.getWidth(), pre.getHeight());
+        // edge to edge: the game draws under the punch-hole too (nothing important sits at the
+        // top centre); only the pause button keeps clear of it
+        if (sizeListener != null) {
+            SizeListener l = sizeListener;
+            sizeListener = null;
+            l.onSafeArea(w, h);    // fixes Host.HEIGHT for this screen before the game starts
         }
+        float scale = Math.min(w / (float) Host.WIDTH, h / (float) Host.HEIGHT);
+        int gw = Math.round(Host.WIDTH * scale), gh = Math.round(Host.HEIGHT * scale);
+        int gx = (w - gw) / 2, gy = (h - gh) / 2;
+        gameRect.set(gx, gy, gx + gw, gy + gh);
+        src.set(0, 0, Host.WIDTH, Host.HEIGHT);
 
-        // backdrop: the picture's aspect, covering the whole screen
-        float s = Math.max(w / 12f, h / 16f);
-        int cw = Math.round(12 * s), ch = Math.round(16 * s);
-        coverRect.set((w - cw) / 2, (h - ch) / 2, (w + cw) / 2, (h + ch) / 2);
-
-        // pause button: above the picture if there is room, otherwise in its top-right corner
-        int size = Math.round(40 * dp), m = Math.round(12 * dp);
-        int top = gy >= size + 2 * m ? gy - size - m : gy + m;
-        int right = Math.min(w - insetR, gameRect.right) - m;
-        pauseRect.set(right - size, top, right, top + size);
+        // pause button: top centre, between the score (left) and the health bar (right)
+        int size = Math.round(40 * dp), m = Math.round(8 * dp);
+        int cx = gameRect.centerX();
+        int top = Math.max(gy, insetT) + m;
+        pauseRect.set(cx - size / 2, top, cx + size / 2, top + size);
     }
 
     // ---- drawing ----------------------------------------------------------
 
     @Override
     protected void onDraw(Canvas c) {
-        if (pre == null) {
-            return;
+        android.graphics.Picture pic = Host.front;
+        if (pic != null) {
+            // replay the game's draw calls at full resolution (HD art, real font)
+            c.save();
+            c.clipRect(gameRect);
+            c.translate(gameRect.left, gameRect.top);
+            c.scale(gameRect.width() / (float) Host.WIDTH, gameRect.height() / (float) Host.HEIGHT);
+            c.drawPicture(pic);
+            c.restore();
         }
-        synchronized (Host.front) {
-            tinyCanvas.drawBitmap(Host.front, src, tinyRect, smooth);
-            preCanvas.drawBitmap(Host.front, src, preRect, sharp);
-        }
-        // the picture blurred to a glow and darkened, filling the screen around it
-        c.drawBitmap(tiny, null, coverRect, smooth);
-        c.drawColor(0x99000000);
-        c.drawBitmap(pre, null, gameRect, smooth);
         if (isPlaying()) {
             drawPause(c);
         }
@@ -295,16 +290,9 @@ public class GameView extends View {
             }
             return new int[]{dx < 0 ? Host.KEY_LEFT : Host.KEY_RIGHT};
         }
-        // tap position in game pixels
+        // tap position in the game's own pixels (menus sit in a 240x320 frame, centred)
         float gx = (downX - gameRect.left) * Host.WIDTH / gameRect.width();
-        float gy = (downY - gameRect.top) * Host.HEIGHT / gameRect.height();
-        boolean bottom = gy > Host.HEIGHT * 0.88f && gy <= Host.HEIGHT;
-        if (bottom && gx >= 0 && gx < Host.WIDTH * 0.3f) {
-            return new int[]{Host.KEY_LSK};
-        }
-        if (bottom && gx > Host.WIDTH * 0.7f && gx <= Host.WIDTH) {
-            return new int[]{Host.KEY_RSK};
-        }
+        float gy = (downY - gameRect.top) * Host.HEIGHT / gameRect.height() - Host.offsetY;
         Object e = Host.canvas();
         if (e == null) {
             return new int[]{Host.KEY_FIRE};
@@ -317,6 +305,9 @@ public class GameView extends View {
                     return pickRow(gx, gy, MATCH_FIRST_Y, 0, Game.unlockedMatch(e), Game.match(e));
                 case Game.SCREEN_MATCH_SELECT_NEW:
                     return pickRow(gx, gy, MATCH_FIRST_Y, 0, 0, 0);
+                case 16:                      // Help: a tap closes it (its only key was BACK)
+                case 17:                      // About Us: same
+                    return new int[]{Host.KEY_RSK};
                 case Game.SCREEN_INTRO:       // story: only "SKIP" (left soft key) moves on
                 case Game.SCREEN_OBJECTIVE:   // match objective: only "OK"
                 case Game.SCREEN_SETTING:     // the left soft key toggles the sound

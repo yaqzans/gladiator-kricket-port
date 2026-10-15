@@ -49,10 +49,15 @@ public class GameActivity extends Activity {
         requestAudioFocus();
 
         if (midlet == null) {
-            Host.armRestore();
-            midlet = new GC();
-            // new e() prepares five MediaPlayers and parses the map; keep it off the UI thread
-            new Thread(midlet::startApp, "gk-start").start();
+            // start once the screen's safe area is known: the game's canvas is made that shape
+            view.setSizeListener((w, h) -> {
+                int height = Math.round(Host.WIDTH * (float) h / w);
+                Host.setHeight(Math.max(320, Math.min(640, height)));
+                Host.armRestore();
+                midlet = new GC();
+                // new e() prepares five MediaPlayers and parses the map; keep it off the UI thread
+                new Thread(midlet::startApp, "gk-start").start();
+            });
         }
     }
 

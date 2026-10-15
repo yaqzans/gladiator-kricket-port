@@ -29,7 +29,7 @@ final class Snapshot {
     private static final String[] GAME_CLASSES = {"defpackage.e", "defpackage.c", "defpackage.d", "defpackage.f"};
 
     private static final java.util.Set<String> NOT_SAVED = new java.util.HashSet<>(
-            java.util.Arrays.asList("l", "f138ab", "f139ac", "f140ad", "f141ae"));
+            java.util.Arrays.asList("l", "f138ab", "f139ac", "f140ad", "f141ae", "f20a", "b"));
 
     private static final byte NULL = 0, STRING = 1, IMAGE = 2, ARRAY = 3, OBJECT = 4, REF = 5, KEEP = 6;
 
@@ -60,8 +60,9 @@ final class Snapshot {
             if (statics && Modifier.isFinal(mod) && !f.getType().isArray()) {
                 continue;
             }
-            // e.l keeps the game loop running (choosing Exit clears it), and f138ab..f141ae are
-            // the held / pressed key masks: a key held at save time must not be "held" after restore
+            // e.l keeps the game loop running (choosing Exit clears it), f138ab..f141ae are the
+            // held / pressed key masks (a key held at save time must not be "held" after restore),
+            // f20a / b are the screen size, which belongs to this phone, not to the save
             if (statics && k.getName().equals("defpackage.e") && NOT_SAVED.contains(f.getName())) {
                 continue;
             }

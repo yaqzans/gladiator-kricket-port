@@ -73,6 +73,34 @@ final class Game {
         return b.toString().trim();
     }
 
+    private static Field layoutHeight, targetReached, ballsLeft;
+
+    /** The game's own screen height variable (e.b); read by its drawing code every frame. */
+    static void setLayoutHeight(Object e, int h) throws ReflectiveOperationException {
+        if (layoutHeight == null) {
+            layoutHeight = f(e.getClass(), "b");
+        }
+        layoutHeight.setInt(null, h);
+    }
+
+    /**
+     * Shamvi's rule for the port: reaching the target ends the match. The original kept batting
+     * until the balls ran out; here, once the game has shown "target reached" (f42f) the balls
+     * left are set to 0 at the start of the next ball, so the game's own end-of-match check runs
+     * its normal win sequence (unlock, score saved, win animation).
+     */
+    static void finishWhenTargetReached(Object e) throws ReflectiveOperationException {
+        init(e);
+        if (targetReached == null) {
+            targetReached = f(e.getClass(), "f42f");
+            ballsLeft = f(e.getClass(), "f36g");
+        }
+        if (screen.getByte(e) == SCREEN_PLAYING && sub.getByte(e) == 0
+                && targetReached.getBoolean(e) && ballsLeft.getByte(e) > 0) {
+            ballsLeft.setByte(e, (byte) 0);
+        }
+    }
+
     static int screen(Object e) throws ReflectiveOperationException {
         init(e);
         return screen.getByte(e);

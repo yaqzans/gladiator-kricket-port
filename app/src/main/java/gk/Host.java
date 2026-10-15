@@ -1,7 +1,7 @@
 package gk;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
+import android.graphics.Picture;
 import android.os.Process;
 import android.util.Log;
 import android.widget.Toast;
@@ -28,7 +28,8 @@ import javax.microedition.media.Player;
  */
 public final class Host {
     public static final int WIDTH = 240;
-    public static final int HEIGHT = 320;
+    /** 320 on the original phone; the port makes it as tall as the phone's screen shape. */
+    public static int HEIGHT = 320;
 
     // MIDP key codes the game understands (kb/code-map.md section 5)
     public static final int KEY_UP = -1;
@@ -46,10 +47,19 @@ public final class Host {
     private static GameView view;
     private static volatile Canvas canvas;
 
-    private static final Bitmap back = Bitmap.createBitmap(WIDTH, HEIGHT, Bitmap.Config.ARGB_8888);
-    private static final Graphics graphics = new Graphics(back);
-    /** Last finished frame; the view draws this one. Guarded by itself. */
-    static final Bitmap front = Bitmap.createBitmap(WIDTH, HEIGHT, Bitmap.Config.ARGB_8888);
+    private static final Graphics graphics = new Graphics();
+    /**
+     * Last finished frame, as a recording of the game's draw calls in its own pixel units; the
+     * view replays it at the screen's full resolution (HD images, real font).
+     */
+    static volatile Picture front;
+    /** Where menus sit on a tall screen: the original 320-pixel frame, centred. */
+    static volatile int offsetY;
+
+    /** Before the game starts: the canvas height for this phone's screen shape. */
+    static void setHeight(int h) {
+        HEIGHT = h;
+    }
 
     private static final ConcurrentLinkedQueue<int[]> keyQueue = new ConcurrentLinkedQueue<>();
     private static final ArrayList<Integer> deferredReleases = new ArrayList<>();
@@ -218,15 +228,27 @@ public final class Host {
         }
         applyAim(c);
         deliverKeys(c);
-        graphics.reset(WIDTH, HEIGHT);
+        int off = 0;
+        try {
+            Game.finishWhenTargetReached(c);
+            // a match uses the whole tall screen; menus keep the original 240x320 layout, centred
+            boolean playing = Game.screen(c) == Game.SCREEN_PLAYING;
+            Game.setLayoutHeight(c, playing ? HEIGHT : 320);
+            off = playing ? 0 : (HEIGHT - 320) / 2;
+        } catch (ReflectiveOperationException e) {
+            Log.e(TAG, "layout", e);
+        }
+        Picture pic = new Picture();
+        graphics.begin(pic.beginRecording(WIDTH, HEIGHT), WIDTH, HEIGHT, off);
         try {
             c.callPaint(graphics);
         } catch (RuntimeException e) {
             Log.e(TAG, "paint failed, skipping frame", e);
         }
-        synchronized (front) {
-            new android.graphics.Canvas(front).drawBitmap(back, 0, 0, null);
-        }
+        graphics.end();
+        pic.endRecording();
+        offsetY = off;
+        front = pic;
         if (view != null) {
             view.postInvalidate();
         }

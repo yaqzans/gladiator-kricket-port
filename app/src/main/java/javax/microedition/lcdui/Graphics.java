@@ -5,10 +5,16 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Typeface;
 
 /**
- * MIDP Graphics on top of an Android Canvas that draws into the fixed 240x320 frame.
- * Only the calls the game makes are here (see kb/code-map.md section 10).
+ * MIDP Graphics for the game. Every call is recorded (into an android.graphics.Picture) in the
+ * game's own pixel units, and the screen replays the recording at the phone's full resolution
+ * on the GPU. Images are drawn from their HD versions, text in a real font, so the result is
+ * sharp at any size instead of a scaled-up 240-pixel-wide picture.
+ *
+ * Only the calls the game makes are here (kb/code-map.md section 10).
  */
 public class Graphics {
     public static final int HCENTER = 1;
@@ -29,35 +35,51 @@ public class Graphics {
     private static final int TRANS_ROT270 = 6;
     private static final int TRANS_MIRROR_ROT90 = 7;
 
-    private final Canvas canvas;
-    private final int baseSave;
-    private final Paint paint = new Paint();
+    private Canvas canvas;
+    private int baseSave;
+    private final Paint fill = new Paint();
+    private final Paint hdPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
+    private final Paint pixelPaint = new Paint();
+    private final Paint text = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
     private final Rect src = new Rect();
-    private final Rect dst = new Rect();
+    private final RectF dst = new RectF();
     private final Matrix matrix = new Matrix();
     private final float[] values = new float[9];
     private int tx;
     private int ty;
+    private int color = 0xFF000000;
 
-    public Graphics(Bitmap target) {
-        canvas = new Canvas(target);
-        baseSave = canvas.save();
-        // nearest neighbour everywhere, the art is pixel art
-        paint.setAntiAlias(false);
-        paint.setFilterBitmap(false);
-        paint.setDither(false);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(0xFF000000);
+    // the original screen is 240x320; on a taller phone menus sit in a 240x320 frame centred
+    // vertically (offsetY) while full-screen backgrounds and fills cover the whole canvas
+    private int canvasW, canvasH, offsetY;
+
+    public Graphics() {
+        fill.setAntiAlias(false);
+        fill.setStyle(Paint.Style.FILL);
+        pixelPaint.setFilterBitmap(false);
+        hdPaint.setAntiAlias(true);
+        text.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
+        text.setTextAlign(Paint.Align.LEFT);
     }
 
-    /** MIDP resets translation and clip before every paint() call. */
-    public void reset(int width, int height) {
-        tx = 0;
-        ty = 0;
-        canvas.restoreToCount(baseSave);
-        canvas.save();
+    /** Start a frame: MIDP resets translation and clip before every paint() call. */
+    public void begin(Canvas c, int width, int height, int offsetY) {
+        canvas = c;
+        canvasW = width;
+        canvasH = height;
+        this.offsetY = offsetY;
+        baseSave = canvas.save();
         canvas.clipRect(0, 0, width, height);
-        paint.setColor(0xFF000000);
+        canvas.drawColor(0xFF000000);
+        tx = 0;
+        ty = offsetY;
+        canvas.save();
+        setColor(0);
+    }
+
+    public void end() {
+        canvas.restoreToCount(baseSave);
+        canvas = null;
     }
 
     public void translate(int x, int y) {
@@ -70,20 +92,21 @@ public class Graphics {
     }
 
     public int getTranslateY() {
-        return ty;
+        return ty - offsetY;
     }
 
     public void setColor(int rgb) {
-        paint.setColor(0xFF000000 | rgb);
+        color = 0xFF000000 | rgb;
+        fill.setColor(color);
     }
 
     public void setColor(int r, int g, int b) {
-        paint.setColor(0xFF000000 | ((r & 255) << 16) | ((g & 255) << 8) | (b & 255));
+        setColor(((r & 255) << 16) | ((g & 255) << 8) | (b & 255));
     }
 
     /** MIDP setClip replaces the clip; it does not intersect with the old one. */
     public void setClip(int x, int y, int w, int h) {
-        canvas.restoreToCount(baseSave);
+        canvas.restoreToCount(baseSave + 1);
         canvas.save();
         canvas.clipRect(x + tx, y + ty, x + tx + w, y + ty + h);
     }
@@ -92,7 +115,17 @@ public class Graphics {
         if (w <= 0 || h <= 0) {
             return;
         }
-        canvas.drawRect(x + tx, y + ty, x + tx + w, y + ty + h, paint);
+        int l = x + tx, t = y + ty;
+        // a fill of the whole original screen (a coloured screen background) covers the phone screen;
+        // a black one (logos, intro, loading) gets the menu artwork, dimmed, so no screen is blank
+        if (offsetY > 0 && t == offsetY && l <= 0 && h >= 320 && w >= canvasW) {
+            if ((color & 0xFFFFFF) == 0 && drawBackdrop()) {
+                return;
+            }
+            canvas.drawRect(0, 0, canvasW, canvasH, fill);
+            return;
+        }
+        canvas.drawRect(l, t, l + w, t + h, fill);
     }
 
     /** MIDP outlines cover (w + 1) x (h + 1) pixels. */
@@ -131,12 +164,46 @@ public class Graphics {
     }
 
     public void drawImage(Image img, int x, int y, int anchor) {
-        Bitmap b = img.bitmap;
-        int w = b.getWidth();
-        int h = b.getHeight();
-        x += tx - anchorDx(anchor, w);
-        y += ty - anchorDy(anchor, h);
-        canvas.drawBitmap(b, x, y, paint);
+        int w = img.getWidth();
+        int h = img.getHeight();
+        float l = x + tx - anchorDx(anchor, w);
+        float t = y + ty - anchorDy(anchor, h);
+        // a full-screen background of the original phone: cover the whole phone screen with it
+        if (offsetY > 0 && w >= 240 && h >= 300 && Math.round(t) == offsetY && Math.round(l) <= 0) {
+            float s = Math.max(canvasW / (float) w, canvasH / (float) h);
+            float cw = w * s, ch = h * s;
+            dst.set((canvasW - cw) / 2, (canvasH - ch) / 2, (canvasW + cw) / 2, (canvasH + ch) / 2);
+            drawWhole(img, dst);
+            return;
+        }
+        dst.set(l, t, l + w, t + h);
+        drawWhole(img, dst);
+    }
+
+    private Image backdrop;
+
+    private boolean drawBackdrop() {
+        try {
+            if (backdrop == null) {
+                backdrop = Image.createImage("/menuBg.png");
+            }
+        } catch (java.io.IOException e) {
+            return false;
+        }
+        float s = Math.max(canvasW / (float) backdrop.getWidth(), canvasH / (float) backdrop.getHeight());
+        float cw = backdrop.getWidth() * s, ch = backdrop.getHeight() * s;
+        dst.set((canvasW - cw) / 2, (canvasH - ch) / 2, (canvasW + cw) / 2, (canvasH + ch) / 2);
+        drawWhole(backdrop, dst);
+        canvas.drawColor(0xD9000000);   // dimmed to a dark, textured background
+        return true;
+    }
+
+    private void drawWhole(Image img, RectF to) {
+        if (img.hd != null) {
+            canvas.drawBitmap(img.hd, null, to, hdPaint);
+        } else {
+            canvas.drawBitmap(img.bitmap, null, to, pixelPaint);
+        }
     }
 
     public void drawRegion(Image img, int sx, int sy, int w, int h, int transform,
@@ -150,11 +217,14 @@ public class Graphics {
         int dh = swap ? w : h;
         int dx = x + tx - anchorDx(anchor, dw);
         int dy = y + ty - anchorDy(anchor, dh);
+        Bitmap bmp = img.hd != null ? img.hd : img.bitmap;
+        int k = img.hd != null ? Image.HD_SCALE : 1;
+        Paint p = img.hd != null ? hdPaint : pixelPaint;
 
         if (transform == TRANS_NONE) {
-            src.set(sx, sy, sx + w, sy + h);
+            src.set(sx * k, sy * k, (sx + w) * k, (sy + h) * k);
             dst.set(dx, dy, dx + w, dy + h);
-            canvas.drawBitmap(img.bitmap, src, dst, paint);
+            canvas.drawBitmap(bmp, src, dst, p);
             return;
         }
 
@@ -176,13 +246,43 @@ public class Graphics {
         values[6] = 0;  values[7] = 0;  values[8] = 1;
         matrix.setValues(values);
         matrix.preTranslate(-sx, -sy);
+        matrix.preScale(1f / k, 1f / k);      // bitmap pixels -> original pixel units
         matrix.postTranslate(dx, dy);
 
         // the whole sheet goes through the matrix, so clip to the output box
         canvas.save();
         canvas.clipRect(dx, dy, dx + dw, dy + dh);
-        canvas.drawBitmap(img.bitmap, matrix, paint);
+        canvas.drawBitmap(bmp, matrix, p);
         canvas.restore();
+    }
+
+    /**
+     * Text in a real font instead of the 9-pixel bitmap font, stretched to exactly the bitmap
+     * font's width so every line, wrap and right-aligned label lands where it always did.
+     * white: the white font (f.png), otherwise the dark grey one (Font_Gray.png).
+     */
+    public boolean drawGameText(String s, int x, int y, boolean white, int width, int cellHeight) {
+        if (s.length() == 0 || width <= 0) {
+            return true;
+        }
+        float size = cellHeight * 1.18f;
+        text.setTextSize(size);
+        text.setTextScaleX(1f);
+        float natural = text.measureText(s);
+        text.setTextScaleX(Math.min(1.25f, width / natural));
+        float base = y + ty + cellHeight * 0.86f;
+        float left = x + tx;
+        if (white) {
+            text.setColor(0xCC000000);       // soft dark edge so white text reads on any art
+            text.setShadowLayer(cellHeight * 0.18f, 0, cellHeight * 0.06f, 0xCC000000);
+            canvas.drawText(s, left, base, text);
+            text.clearShadowLayer();
+            text.setColor(0xFFFFFFFF);
+        } else {
+            text.setColor(0xFF3A3A3A);
+        }
+        canvas.drawText(s, left, base, text);
+        return true;
     }
 
     private static int anchorDx(int anchor, int w) {

@@ -58,96 +58,115 @@ index 3ae1072..5d54c12 100644
 -            graphics.drawRegion(e.f70y, (this.d % 4) * (e.f70y.getWidth() >> 2), 0, e.f70y.getWidth() >> 2, e.f70y.getHeight(), 0, ((this.f12a + this.f17a[64]) - 4) - 7, ((this.b + this.f17a[65]) - 85) - 42, 0);
 +            graphics.drawRegion(defpackage.e.f70y, (this.d % 4) * (defpackage.e.f70y.getWidth() >> 2), 0, defpackage.e.f70y.getWidth() >> 2, defpackage.e.f70y.getHeight(), 0, ((this.f12a + this.f17a[64]) - 4) - 7, ((this.b + this.f17a[65]) - 85) - 42, 0);
 diff --git a/orig/e.java b/fixed/e.java
-index 40846b2..42aaaa3 100644
+index 40846b2..8ab4543 100644
 --- a/orig/e.java
 +++ b/fixed/e.java
-@@ -824,0 +825 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -623,2 +623,2 @@ public final class e extends Canvas implements Runnable, CommandListener {
+-        f20a = 240;
+-        b = 320;
++        f20a = getWidth();
++        b = getHeight();
+@@ -626 +626,2 @@ public final class e extends Canvas implements Runnable, CommandListener {
+-        this.d = f20a >> 1;
++        // port: keep the original 240x320 framing centred on the taller phone screen
++        this.d = (f20a >> 1) + ((b - 320) >> 1);
+@@ -824,0 +826 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                        continue;
-@@ -935,0 +937 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -935,0 +938 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                        continue;
-@@ -1046 +1047,0 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1046 +1048,0 @@ public final class e extends Canvas implements Runnable, CommandListener {
 -        ?? CreateImage;
-@@ -1048,3 +1049 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1048,3 +1050 @@ public final class e extends Canvas implements Runnable, CommandListener {
 -            e eVar = this;
 -            eVar.f44g += 40;
 -            CreateImage = eVar;
 +            this.f44g += 40;
-@@ -1052,3 +1051 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1052,3 +1052 @@ public final class e extends Canvas implements Runnable, CommandListener {
 -            e eVar2 = this;
 -            eVar2.f44g = f20a;
 -            CreateImage = eVar2;
 +            this.f44g = f20a;
-@@ -1064,2 +1061 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1064,2 +1062 @@ public final class e extends Canvas implements Runnable, CommandListener {
 -                CreateImage = Image.createImage("/scoreStrip.png");
 -                f67l = CreateImage;
 +                f67l = Image.createImage("/scoreStrip.png");
-@@ -1068 +1064 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1068 +1065 @@ public final class e extends Canvas implements Runnable, CommandListener {
 -            CreateImage.printStackTrace();
 +            e.printStackTrace();
-@@ -1166,0 +1163 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1166,0 +1164 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                                break;
-@@ -1174,0 +1172 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1174,0 +1173 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                        continue;
-@@ -1235,0 +1234 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1235,0 +1235 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                                break;
-@@ -1243,0 +1243 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1243,0 +1244 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                        continue;
-@@ -1284,0 +1285 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1284,0 +1286 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                                break;
-@@ -1292,0 +1294 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1292,0 +1295 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                        continue;
-@@ -1334,0 +1337 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1334,0 +1338 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                                break;
-@@ -1342,0 +1346 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1342,0 +1347 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                        continue;
-@@ -1371,0 +1376 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1371,0 +1377 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                                break;
-@@ -1379,0 +1385 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1379,0 +1386 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                        continue;
-@@ -1444,0 +1451 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1444,0 +1452 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                                break;
-@@ -1452,0 +1460 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1452,0 +1461 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                        continue;
-@@ -1484,0 +1493 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1484,0 +1494 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                                break;
-@@ -1492,0 +1502 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1492,0 +1503 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                        continue;
-@@ -1523,0 +1534 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1523,0 +1535 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                                break;
-@@ -1531,0 +1543 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1531,0 +1544 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                        continue;
-@@ -1561,0 +1574 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1561,0 +1575 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                        continue;
-@@ -1593,0 +1607 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1593,0 +1608 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                                break;
-@@ -1601,0 +1616 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1601,0 +1617 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                        continue;
-@@ -1638,0 +1654 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1638,0 +1655 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                                break;
-@@ -1646,0 +1663 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1646,0 +1664 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                        continue;
-@@ -1663,0 +1681,2 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1663,0 +1682,2 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                } else {
 +                    break;
-@@ -1668 +1687 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -1668 +1688 @@ public final class e extends Canvas implements Runnable, CommandListener {
 -            graphics.drawRegion(c.f7a[this.f73a[2].f8a], f175f[this.f73a[2].c << 2], f175f[(this.f73a[2].c << 2) + 1], f175f[(this.f73a[2].c << 2) + 2], f175f[(this.f73a[2].c << 2) + 3], this.f73a[2].b, this.f73a[2].f9a + (this.f73a[2].d == 1 ? f176c[this.f73a[2].c << 1] : f177d[this.f73a[2].c << 1]), this.f73a[2].f10b + (this.f73a[2].d == 1 ? f176c[(this.f73a[2].c << 1) + 1] : f177d[(this.f73a[2].c << 1) + 1]), 0);
 +            graphics.drawRegion(defpackage.c.f7a[this.f73a[2].f8a], f175f[this.f73a[2].c << 2], f175f[(this.f73a[2].c << 2) + 1], f175f[(this.f73a[2].c << 2) + 2], f175f[(this.f73a[2].c << 2) + 3], this.f73a[2].b, this.f73a[2].f9a + (this.f73a[2].d == 1 ? f176c[this.f73a[2].c << 1] : f177d[this.f73a[2].c << 1]), this.f73a[2].f10b + (this.f73a[2].d == 1 ? f176c[(this.f73a[2].c << 1) + 1] : f177d[(this.f73a[2].c << 1) + 1]), 0);
-@@ -2260,3 +2279,3 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -2260,3 +2280,3 @@ public final class e extends Canvas implements Runnable, CommandListener {
 -                    c.f7a = new Image[2];
 -                    c.f7a[0] = Image.createImage("/lion.png");
 -                    c.f7a[1] = Image.createImage("/umpire.png");
 +                    defpackage.c.f7a = new Image[2];
 +                    defpackage.c.f7a[0] = Image.createImage("/lion.png");
 +                    defpackage.c.f7a[1] = Image.createImage("/umpire.png");
-@@ -2328 +2347 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -2328 +2348 @@ public final class e extends Canvas implements Runnable, CommandListener {
 -        c.f7a = null;
 +        defpackage.c.f7a = null;
-@@ -3289 +3308 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -3289 +3309 @@ public final class e extends Canvas implements Runnable, CommandListener {
 -        DataInputStream dataInputStream = new DataInputStream(str2.getClass().getResourceAsStream(str2));
 +        DataInputStream dataInputStream = new DataInputStream(e.class.getResourceAsStream(str2));
-@@ -3311,0 +3331 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -3311,0 +3332 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                            continue;
-@@ -3597,0 +3618 @@ public final class e extends Canvas implements Runnable, CommandListener {
+@@ -3523,0 +3545,9 @@ public final class e extends Canvas implements Runnable, CommandListener {
++        // port: the soft-key labels (SELECT, BACK, OK, SKIP, MENU...) named phone keys; the
++        // screen is touched instead, so they are not drawn
++        if (i2 == b - this.f146A) {
++            return;
++        }
++        // port: draw the text in a real font, fitted to the bitmap font's exact width (same layout)
++        if (graphics.drawGameText(str, i, i2, i3 > 0, m5a(str), this.f146A)) {
++            return;
++        }
+@@ -3597,0 +3628 @@ public final class e extends Canvas implements Runnable, CommandListener {
 +                        continue;
 diff --git a/orig/f.java b/fixed/f.java
 index eaa9ac6..ea7e204 100644
