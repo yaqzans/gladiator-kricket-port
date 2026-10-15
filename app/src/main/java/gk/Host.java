@@ -156,6 +156,34 @@ public final class Host {
         keyQueue.add(new int[]{0, key});
     }
 
+    private static volatile int pickScreen = -1, pickRow = -1;
+
+    /** Menu tap (UI thread): applied on the game thread before the next frame. */
+    static void pickItem(int screen, int row) {
+        pickRow = row;
+        pickScreen = screen;
+    }
+
+    /** Moves the game's own cursor to the tapped item and presses select, in the same frame. */
+    private static void applyPick(Canvas c) {
+        int screen = pickScreen, row = pickRow;
+        if (screen < 0) {
+            return;
+        }
+        pickScreen = -1;
+        try {
+            if (Game.screen(c) != screen) {
+                return;   // the screen changed since the tap
+            }
+            Game.setCursor(c, screen, row);
+            c.callKeyPressed(KEY_FIRE);
+            pressedOnFrame[-KEY_FIRE & 15] = frameNo + 1;
+            deferredReleases.add(KEY_FIRE);
+        } catch (ReflectiveOperationException e) {
+            Log.e(TAG, "menu pick", e);
+        }
+    }
+
     /** A tapped menu move is still being played into the game. */
     static boolean busy() {
         return macroHeld != 0 || !macro.isEmpty();
@@ -228,6 +256,7 @@ public final class Host {
         }
         applyAim(c);
         deliverKeys(c);
+        applyPick(c);
         int off = 0;
         try {
             Game.finishWhenTargetReached(c);

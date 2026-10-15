@@ -117,6 +117,17 @@ final class Game {
         return sub.getByte(e);
     }
 
+    /** Put the game's own list cursor on a row: main menu f112t, Load Game match list f33d. */
+    static void setCursor(Object e, int screen, int row) throws ReflectiveOperationException {
+        init(e);
+        if (screen == SCREEN_MENU) {
+            menuIndex.setByte(e, (byte) row);
+        } else if (screen == SCREEN_MATCH_SELECT_LOAD) {
+            match.setByte(e, (byte) row);
+        }
+        // New Game's list (20) always starts at match 1, as in the original
+    }
+
     static int menuIndex(Object e) throws ReflectiveOperationException {
         init(e);
         return menuIndex.getByte(e);

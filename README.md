@@ -83,6 +83,10 @@ python tools/upscale.py RealESRGAN_x4plus_anime_6B.pth app/src/main/resources ap
 ./gradlew assembleDebug
 ```
 
+The menu label images are small serif text the upscaler garbles, so they are redrawn with
+`python tools/menu_labels.py Cinzel.ttf <original images> app/src/main/resources/hd` (Cinzel,
+SIL Open Font License, github.com/google/fonts ofl/cinzel).
+
 Without the HD images the game still runs, drawn from the original pixels. The Real-ESRGAN
 weights are on github.com/xinntao/Real-ESRGAN (release v0.2.2.4).
 

@@ -29,7 +29,7 @@ public class GameView extends View {
     // menu geometry in game pixels (240x320), measured from the game's own screens
     private static final int MENU_FIRST_Y = 127, MENU_STEP = 28, MENU_HALF = 13;
     private static final int MATCH_FIRST_Y = 183;
-    private static final int ITEM_LEFT = 50, ITEM_RIGHT = 190;
+    private static final int ITEM_LEFT = 40, ITEM_RIGHT = 200;
 
     private final float dp;
     private final Paint sharp = new Paint();
@@ -300,11 +300,14 @@ public class GameView extends View {
         try {
             switch (Game.screen(e)) {
                 case Game.SCREEN_MENU:
-                    return pickRow(gx, gy, MENU_FIRST_Y, Game.continueShown(e) ? 0 : 1, 6, Game.menuIndex(e));
+                    pick(Game.SCREEN_MENU, rowAt(gx, gy, MENU_FIRST_Y, Game.continueShown(e) ? 0 : 1, 6));
+                    return null;
                 case Game.SCREEN_MATCH_SELECT_LOAD:
-                    return pickRow(gx, gy, MATCH_FIRST_Y, 0, Game.unlockedMatch(e), Game.match(e));
+                    pick(Game.SCREEN_MATCH_SELECT_LOAD, rowAt(gx, gy, MATCH_FIRST_Y, 0, Game.unlockedMatch(e)));
+                    return null;
                 case Game.SCREEN_MATCH_SELECT_NEW:
-                    return pickRow(gx, gy, MATCH_FIRST_Y, 0, 0, 0);
+                    pick(Game.SCREEN_MATCH_SELECT_NEW, rowAt(gx, gy, MATCH_FIRST_Y, 0, 0));
+                    return null;
                 case 16:                      // Help: a tap closes it (its only key was BACK)
                 case 17:                      // About Us: same
                     return new int[]{Host.KEY_RSK};
@@ -323,25 +326,20 @@ public class GameView extends View {
         }
     }
 
-    /**
-     * Tapping a list item: move the game's own cursor there with the arrow keys, then select.
-     * Taps between items or on locked ones do nothing.
-     */
-    private static int[] pickRow(float gx, float gy, int firstY, int firstRow, int lastRow, int current) {
+    /** The list row a tap is on (rows touch each other, so any tap on the list hits one), or -1. */
+    private static int rowAt(float gx, float gy, int firstY, int firstRow, int lastRow) {
         if (gx < ITEM_LEFT || gx > ITEM_RIGHT) {
-            return null;
+            return -1;
         }
         int row = Math.round((gy - firstY) / MENU_STEP);
-        if (Math.abs(gy - (firstY + row * MENU_STEP)) > MENU_HALF || row < firstRow || row > lastRow) {
-            return null;
+        return row < firstRow || row > lastRow ? -1 : row;
+    }
+
+    /** Tapping a list item: the game's cursor goes straight to it and it is selected, in one frame. */
+    private static void pick(int screen, int row) {
+        if (row >= 0) {
+            Host.pickItem(screen, row);
         }
-        int steps = row - current;
-        int[] keys = new int[Math.abs(steps) + 1];
-        for (int i = 0; i < Math.abs(steps); i++) {
-            keys[i] = steps > 0 ? Host.KEY_DOWN : Host.KEY_UP;
-        }
-        keys[keys.length - 1] = Host.KEY_FIRE;
-        return keys;
     }
 
     private static boolean isPlaying() {
