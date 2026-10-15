@@ -75,6 +75,12 @@ final class Game {
 
     private static Field layoutHeight, targetReached, ballsLeft;
 
+    /** The camera's vertical centre for a canvas this tall (as the patched constructor sets it). */
+    static void centreCamera(Object e, int height) throws ReflectiveOperationException {
+        Field d = f(e.getClass(), "d");
+        d.setInt(e, (Host.WIDTH >> 1) + ((height - 320) >> 1));
+    }
+
     /** The game's own screen height variable (e.b); read by its drawing code every frame. */
     static void setLayoutHeight(Object e, int h) throws ReflectiveOperationException {
         if (layoutHeight == null) {

@@ -174,8 +174,15 @@ final class Snapshot {
             HashMap<String, Field> byName = index(stateFields(k, true));
             int n = in.readInt();
             for (int i = 0; i < n; i++) {
-                Field f = byName.get(in.readUTF());
+                String fieldName = in.readUTF();
+                Field f = byName.get(fieldName);
                 if (f == null) {
+                    // saves from 1.1 still contain e's screen size (f20a, b, both int), which is
+                    // no longer saved: read past it so those saved matches still load
+                    if (name.equals("defpackage.e") && (fieldName.equals("f20a") || fieldName.equals("b"))) {
+                        in.readInt();
+                        continue;
+                    }
                     throw new IOException("unknown static field in " + name);
                 }
                 Object cur = f.get(null);

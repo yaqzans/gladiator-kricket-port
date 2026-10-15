@@ -41,7 +41,7 @@ public final class Host {
     public static final int KEY_RSK = -7;
 
     private static final String TAG = "GK";
-    private static final int SNAPSHOT_VERSION = 2;
+    private static final int SNAPSHOT_VERSION = 2;   // 1.1 and 1.2 saves are both version 2
 
     private static Activity activity;
     private static GameView view;
@@ -353,6 +353,8 @@ public final class Host {
             in.readByte();
             Snapshot.restore(in, c);
             restoreData = null;
+            // the camera centre belongs to this screen, not to the save (1.1 saves had 320 high)
+            Game.centreCamera(c, HEIGHT);
             if (Game.screen(c) == Game.SCREEN_PLAYING) {
                 c.callHideNotify();
             }
