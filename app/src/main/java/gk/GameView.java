@@ -27,8 +27,6 @@ import android.view.WindowInsets;
  */
 public class GameView extends View {
     // menu geometry in game pixels (240x320), measured from the game's own screens
-    private static final int MENU_FIRST_Y = 127, MENU_STEP = 28, MENU_HALF = 13;
-    private static final int MATCH_FIRST_Y = 183;
     private static final int ITEM_LEFT = 40, ITEM_RIGHT = 200;
 
     private final float dp;
@@ -290,24 +288,33 @@ public class GameView extends View {
             }
             return new int[]{dx < 0 ? Host.KEY_LEFT : Host.KEY_RIGHT};
         }
-        // tap position in the game's own pixels (menus sit in a 240x320 frame, centred)
-        float gx = (downX - gameRect.left) * Host.WIDTH / gameRect.width();
-        float gy = (downY - gameRect.top) * Host.HEIGHT / gameRect.height() - Host.offsetY;
+        // tap position on the game's canvas, in the same units the frame was drawn in
+        float cx = (downX - gameRect.left) * Host.WIDTH / gameRect.width();
+        float cy = (downY - gameRect.top) * Host.HEIGHT / gameRect.height();
         Object e = Host.canvas();
         if (e == null) {
             return new int[]{Host.KEY_FIRE};
         }
         try {
             switch (Game.screen(e)) {
-                case Game.SCREEN_MENU:
-                    pick(Game.SCREEN_MENU, rowAt(gx, gy, MENU_FIRST_Y, Game.continueShown(e) ? 0 : 1, 6));
+                case Game.SCREEN_MENU: {
+                    // panels are drawn for each item from Continue (only when shown) to Exit
+                    int k = panelAt(cx, cy);
+                    if (k >= 0) {
+                        pick(Game.SCREEN_MENU, k + (Game.continueShown(e) ? 0 : 1));
+                    }
                     return null;
+                }
                 case Game.SCREEN_MATCH_SELECT_LOAD:
-                    pick(Game.SCREEN_MATCH_SELECT_LOAD, rowAt(gx, gy, MATCH_FIRST_Y, 0, Game.unlockedMatch(e)));
+                case Game.SCREEN_MATCH_SELECT_NEW: {
+                    // panel 0 is the "Select Game" header, panels 1..4 are matches 1..4
+                    int k = panelAt(cx, cy) - 1;
+                    int last = Game.screen(e) == Game.SCREEN_MATCH_SELECT_LOAD ? Game.unlockedMatch(e) : 0;
+                    if (k >= 0 && k <= last) {
+                        pick(Game.screen(e), k);
+                    }
                     return null;
-                case Game.SCREEN_MATCH_SELECT_NEW:
-                    pick(Game.SCREEN_MATCH_SELECT_NEW, rowAt(gx, gy, MATCH_FIRST_Y, 0, 0));
-                    return null;
+                }
                 case 16:                      // Help: a tap closes it (its only key was BACK)
                 case 17:                      // About Us: same
                     return new int[]{Host.KEY_RSK};
@@ -326,13 +333,21 @@ public class GameView extends View {
         }
     }
 
-    /** The list row a tap is on (rows touch each other, so any tap on the list hits one), or -1. */
-    private static int rowAt(float gx, float gy, int firstY, int firstRow, int lastRow) {
-        if (gx < ITEM_LEFT || gx > ITEM_RIGHT) {
-            return -1;
+    /**
+     * Which menu panel (in drawing order) the tap is on, using the rectangles the last frame
+     * actually drew them at, so a tap always selects what is under the finger. The gaps
+     * between panels count half to each neighbour.
+     */
+    private static int panelAt(float cx, float cy) {
+        android.graphics.RectF[] p = Host.panels;
+        for (int i = 0; i < p.length; i++) {
+            float top = i > 0 ? (p[i - 1].bottom + p[i].top) / 2 : p[i].top - 6;
+            float bottom = i < p.length - 1 ? (p[i].bottom + p[i + 1].top) / 2 : p[i].bottom + 6;
+            if (cx >= p[i].left - 10 && cx <= p[i].right + 10 && cy >= top && cy < bottom) {
+                return i;
+            }
         }
-        int row = Math.round((gy - firstY) / MENU_STEP);
-        return row < firstRow || row > lastRow ? -1 : row;
+        return -1;
     }
 
     /** Tapping a list item: the game's cursor goes straight to it and it is selected, in one frame. */

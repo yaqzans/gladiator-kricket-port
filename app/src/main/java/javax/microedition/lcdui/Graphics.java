@@ -47,6 +47,8 @@ public class Graphics {
     private final float[] values = new float[9];
     private int tx;
     private int ty;
+    /** Where this frame drew each menu panel (menupanel.png), in canvas units: taps hit these. */
+    private final java.util.ArrayList<RectF> panels = new java.util.ArrayList<>();
     private int color = 0xFF000000;
 
     // the original screen is 240x320; on a taller phone menus sit in a 240x320 frame centred
@@ -65,6 +67,7 @@ public class Graphics {
     /** Start a frame: MIDP resets translation and clip before every paint() call. */
     public void begin(Canvas c, int width, int height, int offsetY) {
         canvas = c;
+        panels.clear();
         canvasW = width;
         canvasH = height;
         this.offsetY = offsetY;
@@ -75,6 +78,11 @@ public class Graphics {
         ty = offsetY;
         canvas.save();
         setColor(0);
+    }
+
+    /** The menu panels drawn this frame, top to bottom in drawing order. */
+    public RectF[] panelRects() {
+        return panels.toArray(new RectF[0]);
     }
 
     public void end() {
@@ -217,6 +225,9 @@ public class Graphics {
         int dh = swap ? w : h;
         int dx = x + tx - anchorDx(anchor, dw);
         int dy = y + ty - anchorDy(anchor, dh);
+        if ("/menupanel.png".equals(img.name())) {
+            panels.add(new RectF(dx, dy, dx + dw, dy + dh));
+        }
         Bitmap bmp = img.hd != null ? img.hd : img.bitmap;
         int k = img.hd != null ? Image.HD_SCALE : 1;
         Paint p = img.hd != null ? hdPaint : pixelPaint;

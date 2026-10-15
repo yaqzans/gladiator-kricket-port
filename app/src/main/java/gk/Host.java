@@ -55,6 +55,9 @@ public final class Host {
     static volatile Picture front;
     /** Where menus sit on a tall screen: the original 320-pixel frame, centred. */
     static volatile int offsetY;
+    /** The menu panels as drawn in the last frame (canvas units), for hit-testing taps. */
+    static volatile android.graphics.RectF[] panels = new android.graphics.RectF[0];
+    private static int lastScreen = -1;
 
     /** Before the game starts: the canvas height for this phone's screen shape. */
     static void setHeight(int h) {
@@ -261,7 +264,12 @@ public final class Host {
         try {
             Game.finishWhenTargetReached(c);
             // a match uses the whole tall screen; menus keep the original 240x320 layout, centred
-            boolean playing = Game.screen(c) == Game.SCREEN_PLAYING;
+            int scr = Game.screen(c);
+            if (scr != lastScreen) {
+                Log.i(TAG, "screen " + lastScreen + " -> " + scr);
+                lastScreen = scr;
+            }
+            boolean playing = scr == Game.SCREEN_PLAYING;
             Game.setLayoutHeight(c, playing ? HEIGHT : 320);
             off = playing ? 0 : (HEIGHT - 320) / 2;
         } catch (ReflectiveOperationException e) {
@@ -274,6 +282,7 @@ public final class Host {
         } catch (RuntimeException e) {
             Log.e(TAG, "paint failed, skipping frame", e);
         }
+        panels = graphics.panelRects();
         graphics.end();
         pic.endRecording();
         offsetY = off;
